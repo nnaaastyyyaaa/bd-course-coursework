@@ -25,6 +25,7 @@ model category {
   product       product[]
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model client {
   client_id    Int       @id @default(autoincrement())
   client_name  String    @db.VarChar(32)
@@ -33,9 +34,10 @@ model client {
   phone_number String?   @db.VarChar(20)
   address      address[]
   orders       orders[]
-  review       review[]
+  review review[]
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model order_item {
   order_item_id Int     @id @default(autoincrement())
   quantity      Int
@@ -47,6 +49,7 @@ model order_item {
   @@unique([order_id, product_id], map: "unique_order_item")
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model orders {
   order_id    Int          @id @default(autoincrement())
   order_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Date
@@ -64,6 +67,7 @@ model orders {
   shipment    shipment[]
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model payment {
   payment_id     Int                 @id @default(autoincrement())
   payment_date   DateTime            @default(now()) @db.Timestamptz(6)
@@ -74,6 +78,7 @@ model payment {
   orders         orders              @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model product {
   product_id   Int               @id @default(autoincrement())
   product_name String
@@ -81,22 +86,14 @@ model product {
   quantity     Int
   description  String            @db.VarChar(255)
   stock_status stock_status_name
+  image_url    String?
   category_id  Int
   order_item   order_item[]
   category     category          @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
-  review       review[]
+  review review[]
 }
 
-model review {
-  id         Int     @id @default(autoincrement())
-  rating     Int
-  comment    String?
-  product_id Int
-  client_id  Int
-  client     client  @relation(fields: [client_id], references: [client_id])
-  product    product @relation(fields: [product_id], references: [product_id])
-}
-
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model shipment {
   shipment_id      Int       @id @default(autoincrement())
   carrier          String?
@@ -113,11 +110,21 @@ model shipment {
 model worker {
   worker_id    Int        @id @default(autoincrement())
   worker_role  role_name
-  f_name       String     @db.VarChar(32)
+  first_name   String     @db.VarChar(32)
   last_name    String     @db.VarChar(32)
   phone_number String?    @unique @db.VarChar(13)
   orders       orders[]
   shipment     shipment[]
+}
+
+model review {
+  id         Int     @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  product_id Int
+  client_id  Int
+  client     client  @relation(fields: [client_id], references: [client_id])
+  product    product @relation(fields: [product_id], references: [product_id])
 }
 
 enum methods {

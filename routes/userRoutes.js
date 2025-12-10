@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const clientController = require("../controllers/clientController");
 
-router.get("/", async (req, res) => {
-  const users = await req.prisma.client.findMany();
-  res.json(users);
-});
-
+router.get("/", clientController.getAllClients);
+router.post("/client", clientController.createClient);
 module.exports = router;
