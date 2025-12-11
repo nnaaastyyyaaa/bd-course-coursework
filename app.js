@@ -1,6 +1,6 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-
+const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
 const app = express();
 const prisma = new PrismaClient();
@@ -11,5 +11,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
 
 module.exports = app;

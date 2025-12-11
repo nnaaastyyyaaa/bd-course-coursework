@@ -14,7 +14,7 @@ model address {
   street      String   @db.VarChar(32)
   postal_code String   @db.VarChar(32)
   client_id   Int
-  client      client   @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
+  client      client   @relation(fields: [client_id], references: [client_id], onDelete: Cascade, onUpdate: NoAction)
   orders      orders[]
 }
 
@@ -43,8 +43,8 @@ model order_item {
   quantity      Int
   order_id      Int
   product_id    Int
-  orders        orders  @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
-  product       product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
+  orders        orders  @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)
+  product       product @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([order_id, product_id], map: "unique_order_item")
 }
@@ -54,15 +54,15 @@ model orders {
   order_id    Int          @id @default(autoincrement())
   order_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Date
   order_price Int
-  status      status_name
-  discount    Int?
+  status      status_name  @default(processing)
+  discount    Int?         @default(0)
   client_id   Int
   address_id  Int
   worker_id   Int
   order_item  order_item[]
-  address     address      @relation(fields: [address_id], references: [address_id], onDelete: NoAction, onUpdate: NoAction)
-  client      client       @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
-  worker      worker       @relation(fields: [worker_id], references: [worker_id], onDelete: NoAction, onUpdate: NoAction)
+  address     address      @relation(fields: [address_id], references: [address_id], onDelete: Cascade, onUpdate: NoAction)
+  client      client       @relation(fields: [client_id], references: [client_id], onDelete: Cascade, onUpdate: NoAction)
+  worker      worker       @relation(fields: [worker_id], references: [worker_id], onDelete: Cascade, onUpdate: NoAction)
   payment     payment[]
   shipment    shipment[]
 }
@@ -75,7 +75,7 @@ model payment {
   payment_status payment_status_name
   price          Decimal             @db.Decimal(10, 2)
   order_id       Int
-  orders         orders              @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
+  orders         orders              @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -89,7 +89,7 @@ model product {
   image_url    String?
   category_id  Int
   order_item   order_item[]
-  category     category          @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
+  category     category          @relation(fields: [category_id], references: [category_id], onDelete: Cascade, onUpdate: NoAction)
   review review[]
 }
 
@@ -103,8 +103,8 @@ model shipment {
   delivery_address String
   order_id         Int
   worker_id        Int?
-  orders           orders    @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
-  worker           worker?   @relation(fields: [worker_id], references: [worker_id], onDelete: NoAction, onUpdate: NoAction)
+  orders           orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)
+  worker           worker?   @relation(fields: [worker_id], references: [worker_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model worker {
@@ -123,8 +123,8 @@ model review {
   comment    String?
   product_id Int
   client_id  Int
-  client     client  @relation(fields: [client_id], references: [client_id])
-  product    product @relation(fields: [product_id], references: [product_id])
+  client     client  @relation(fields: [client_id], references: [client_id], onDelete: Cascade)
+  product    product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
 }
 
 enum methods {
