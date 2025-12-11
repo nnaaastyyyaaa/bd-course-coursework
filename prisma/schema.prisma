@@ -72,7 +72,7 @@ model payment {
   payment_id     Int                 @id @default(autoincrement())
   payment_date   DateTime            @default(now()) @db.Timestamptz(6)
   payment_method methods
-  payment_status payment_status_name
+  payment_status payment_status_name @default(not_paid)
   price          Decimal             @db.Decimal(10, 2)
   order_id       Int
   orders         orders              @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)
@@ -100,7 +100,6 @@ model shipment {
   tracking_number  String?   @unique
   shipment_status  String    @default("processing") @db.VarChar(50)
   shipping_date    DateTime? @db.Date
-  delivery_address String
   order_id         Int
   worker_id        Int?
   orders           orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)

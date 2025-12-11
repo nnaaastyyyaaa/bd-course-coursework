@@ -242,7 +242,6 @@ async function main() {
         tracking_number: "20450123456789",
         shipment_status: "shipped",
         shipping_date: new Date("2025-10-13"),
-        delivery_address: "м. Київ, вул. Хрещатик, 24, кв. 7",
         order_id: 1,
         worker_id: 3,
       },
