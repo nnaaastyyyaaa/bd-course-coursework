@@ -219,6 +219,16 @@ exports.addOrderItem = async (req, res) => {
         data: { order_price: order.order_price + OIprice },
       });
       if (!newOrder) throw new Error("Failed to update order");
+
+      const newPayment = await transaction.payment.update({
+        where: { order_id: newOrder.order_id },
+        data: {
+          date: Date.now(),
+          payment: newOrder.order_price,
+        },
+      });
+
+      if (!newPayment) throw new Error("Failed to update payment");
     });
     res.json({ "Added order_item and updated order": orderItem, newOrder });
   } catch (error) {
