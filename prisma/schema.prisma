@@ -85,7 +85,7 @@ model product {
   price        Int
   quantity     Int
   description  String            @db.VarChar(255)
-  stock_status stock_status_name
+  stock_status stock_status_name @default(in_stock)
   image_url    String?
   category_id  Int
   order_item   order_item[]
