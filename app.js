@@ -8,6 +8,7 @@ const productRoutes = require("./routes/productRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const shipmentRoutes = require("./routes/shipmentRoutes");
 const workerRoutes = require("./routes/workerRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 const prisma = new PrismaClient();
@@ -26,5 +27,6 @@ app.use("/api/products", productRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/shipments", shipmentRoutes);
 app.use("/api/workers", workerRoutes);
+app.use("/api/categories", categoryRoutes);
 
 module.exports = app;

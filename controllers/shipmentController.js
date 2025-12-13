@@ -13,7 +13,7 @@ exports.getShipment = async (req, res) => {
     const shipment = await req.prisma.shipment.findUnique({
       where: { shipment_id: Number(id) },
     });
-    if (!shipment) throw new Error("shipment not found");
+    if (!shipment) throw new Error("Shipment not found");
     res.json(shipment);
   } catch (error) {
     res.status(505).json({ error: error.message });

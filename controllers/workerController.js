@@ -1,7 +1,7 @@
 exports.getAllWorkers = async (req, res) => {
   try {
-    const uworkers = await req.prisma.worker.findMany();
-    res.json(uworkers);
+    const workers = await req.prisma.worker.findMany();
+    res.json(workers);
   } catch (error) {
     res.status(505).json({ error: error.message });
   }
@@ -26,7 +26,7 @@ exports.getWorker = async (req, res) => {
     const worker = await req.prisma.worker.findUnique({
       where: { worker_id: Number(id) },
     });
-    if (!worker) throw new Error("worker not found");
+    if (!worker) throw new Error("Worker not found");
     res.json(worker);
   } catch (error) {
     res.status(505).json({ error: error.message });

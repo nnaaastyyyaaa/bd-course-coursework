@@ -13,7 +13,7 @@ exports.getPayment = async (req, res) => {
     const payment = await req.prisma.payment.findUnique({
       where: { payment_id: Number(id) },
     });
-    if (!payment) throw new Error("payment not found");
+    if (!payment) throw new Error("Payment not found");
     res.json(payment);
   } catch (error) {
     res.status(505).json({ error: error.message });
