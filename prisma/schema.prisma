@@ -117,7 +117,7 @@ model worker {
 }
 
 model review {
-  id         Int     @id @default(autoincrement())
+  review_id         Int     @id @default(autoincrement())
   rating     Int
   comment    String?
   product_id Int
