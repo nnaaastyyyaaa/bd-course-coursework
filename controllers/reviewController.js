@@ -1,15 +1,20 @@
+const MyError = require("../services/myError");
+
 exports.getAllReviews = async (req, res) => {
   try {
     const reviews = await req.prisma.review.findMany();
+    if (!reviews) throw new MyError("Reviews not found", 404);
     res.json(reviews);
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
 exports.createReview = async (req, res) => {
   try {
     const { rating, comment, product_id, client_id } = req.body;
+    if (!rating || !comment || !product_id || !client_id)
+      throw new MyError("Enter all required fields!", 400);
     const review = await req.prisma.review.create({
       data: {
         rating,
@@ -18,9 +23,10 @@ exports.createReview = async (req, res) => {
         client_id,
       },
     });
-    res.json({ "Created review": review });
+    if (!review) throw new MyError("Failed to create review", 500);
+    res.status(201).json({ "Created review": review });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -30,10 +36,10 @@ exports.getReview = async (req, res) => {
     const review = await req.prisma.review.findUnique({
       where: { review_id: Number(id) },
     });
-    if (!review) throw new Error("review not found");
+    if (!review) throw new MyError("Review not found", 404);
     res.json(review);
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -44,10 +50,10 @@ exports.updateReview = async (req, res) => {
       where: { review_id: Number(id) },
       data: req.body,
     });
-    if (!updatedReview) throw new Error("Failed to update review");
+    if (!updatedReview) throw new MyError("Failed to update review", 500);
     res.json({ "Updateed review": updatedReview });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -59,6 +65,6 @@ exports.deleteReview = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };

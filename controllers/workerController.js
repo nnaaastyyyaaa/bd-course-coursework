@@ -1,22 +1,27 @@
+const MyError = require("../services/myError");
+
 exports.getAllWorkers = async (req, res) => {
   try {
     const workers = await req.prisma.worker.findMany();
+    if (!workers) throw new MyError("Workers not found", 404);
     res.json(workers);
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
 exports.createWorker = async (req, res) => {
   try {
     const { worker_role, first_name, last_name, phone_number } = req.body;
-    console.log(req.body);
+    if (!worker_role || !first_name || !last_name || !phone_number)
+      throw new Error("Enter all required fields!", 400);
     const worker = await req.prisma.worker.create({
       data: { worker_role, first_name, last_name, phone_number },
     });
-    res.json({ "Created worker": worker });
+    if (!worker) throw new MyError("Failed to create worker", 500);
+    res.status(201).json({ "Created worker": worker });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -26,10 +31,10 @@ exports.getWorker = async (req, res) => {
     const worker = await req.prisma.worker.findUnique({
       where: { worker_id: Number(id) },
     });
-    if (!worker) throw new Error("Worker not found");
+    if (!worker) throw new MyError("Worker not found", 404);
     res.json(worker);
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -40,10 +45,10 @@ exports.updateWorker = async (req, res) => {
       where: { worker_id: Number(id) },
       data: req.body,
     });
-    if (!updatedWorker) throw new Error("Failed to update worker");
+    if (!updatedWorker) throw new MyError("Failed to update worker", 500);
     res.json({ "Updateed worker": updatedWorker });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 

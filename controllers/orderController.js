@@ -1,3 +1,5 @@
+const MyError = require("../services/myError");
+
 const updateProduct = async (transaction, product_id, quantity) => {
   const result = await transaction.product.updateMany({
     where: {
@@ -10,12 +12,15 @@ const updateProduct = async (transaction, product_id, quantity) => {
   });
 
   if (result.count === 0) {
-    throw new Error("Haven't enough products in stock");
+    throw new MyError("Haven't enough products in stock", 400);
   }
 
   const updatedProduct = await transaction.product.findUnique({
     where: { product_id: Number(product_id) },
   });
+
+  if (!updatedProduct)
+    throw new MyError(`Couldn't find product with id ${product_id}`, 404);
 
   const finalyUpdatedProduct = await transaction.product.update({
     where: { product_id: Number(product_id) },
@@ -34,11 +39,16 @@ exports.createOrder = async (req, res) => {
   let newAddress, newOrder, newPayment, newShipment;
   let orderItems = [];
   try {
+    if (!client_id || !address || !worker_id || !carrier || !payment_method)
+      throw new MyError("Enter all order details!", 400);
+
     const { country, city, street, postal_code } = address;
+
     if (!country || !city || !street || !postal_code)
-      throw new Error("Enter full address details");
+      throw new MyError("Enter full address details", 400);
+
     if (!items || items.length === 0)
-      throw new Error("Order must contain at least one item!");
+      throw new MyError("Order must contain at least one item!", 400);
 
     await req.prisma.$transaction(async (transaction) => {
       newAddress = await transaction.address.create({
@@ -50,12 +60,13 @@ exports.createOrder = async (req, res) => {
           client_id,
         },
       });
-      if (!newAddress) throw new Error("Error while creating address");
+      if (!newAddress) throw new MyError("Error while creating address", 500);
 
       const productIds = items.map((i) => i.product_id);
       const products = await transaction.product.findMany({
         where: { product_id: { in: productIds } },
       });
+      if (!products) throw new MyError("Products not found", 404);
 
       const priceAndId = Object.fromEntries(
         products.map((p) => [p.product_id, p.price])
@@ -65,7 +76,7 @@ exports.createOrder = async (req, res) => {
       for (const item of items) {
         const { quantity, product_id } = item;
         if (!priceAndId[product_id])
-          throw new Error(`Product with id ${product_id} not found`);
+          throw new MyError(`Product with id ${product_id} not found`, 404);
 
         const updatedProduct = await updateProduct(
           transaction,
@@ -74,7 +85,7 @@ exports.createOrder = async (req, res) => {
         );
 
         if (!updatedProduct)
-          throw new Error("Error while updating product stock");
+          throw new MyError("Error while updating product stock", 500);
 
         order_price += priceAndId[product_id] * quantity;
       }
@@ -88,7 +99,7 @@ exports.createOrder = async (req, res) => {
         },
       });
 
-      if (!newOrder) throw new Error("Error while creating order");
+      if (!newOrder) throw new MyError("Error while creating order", 500);
       orderItems = await Promise.all(
         items.map((item) =>
           transaction.order_item.create({
@@ -110,7 +121,7 @@ exports.createOrder = async (req, res) => {
           worker_id: 4,
         },
       });
-      if (!newShipment) throw new Error("Error while creating shipment");
+      if (!newShipment) throw new MyError("Error while creating shipment", 500);
 
       newPayment = await transaction.payment.create({
         data: {
@@ -119,8 +130,9 @@ exports.createOrder = async (req, res) => {
           order_id: newOrder.order_id,
         },
       });
+      if (!newPayment) throw new MyError("Error while creating payment", 500);
     });
-    res.json({
+    res.status(201).json({
       "Created order": {
         order: newOrder,
         items: orderItems,
@@ -130,16 +142,17 @@ exports.createOrder = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await req.prisma.orders.findMany();
+    if (!orders) throw new MyError("Orders not found", 404);
     res.json(orders);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -149,10 +162,10 @@ exports.getOrder = async (req, res) => {
     const order = await req.prisma.orders.findUnique({
       where: { order_id: Number(id) },
     });
-    if (!order) throw new Error("Order not found");
+    if (!order) throw new MyError("Order not found", 404);
     res.json(order);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -164,10 +177,10 @@ exports.updateOrderStatus = async (req, res) => {
       where: { order_id: Number(id) },
       data: { status },
     });
-    if (!updatedOrder) throw new Error("Failed to update order");
-    res.json({ "Updateed order": updatedOrder });
+    if (!updatedOrder) throw new MyError("Failed to update order", 500);
+    res.json({ "Updated order": updatedOrder });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
@@ -179,19 +192,21 @@ exports.deleteOrder = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
 
 exports.addOrderItem = async (req, res) => {
   try {
     const { quantity, order_id, product_id } = req.body;
+    if (!quantity || !order_id || !product_id)
+      throw new MyError("Enter all required fields!", 400);
     let orderItem, newOrder;
     await req.prisma.$transaction(async (transaction) => {
       const product = await transaction.product.findUnique({
         where: { product_id: Number(product_id) },
       });
-      if (!product) throw new Error("Invalid product_id");
+      if (!product) throw new MyError("Invalid product_id", 400);
 
       const updatedProduct = await updateProduct(
         transaction,
@@ -200,17 +215,17 @@ exports.addOrderItem = async (req, res) => {
       );
 
       if (!updatedProduct)
-        throw new Error("Error while updating product stock");
+        throw new MyError("Error while updating product stock", 500);
 
       const order = await transaction.orders.findUnique({
         where: { order_id: Number(order_id) },
       });
-      if (!order) throw new Error("Invalid order_id");
+      if (!order) throw new MyError("Invalid order_id", 400);
 
       orderItem = await transaction.order_item.create({
         data: { quantity, order_id, product_id },
       });
-      if (!orderItem) throw new Error("Failed to create order_item");
+      if (!orderItem) throw new MyError("Failed to create order item", 500);
 
       const OIprice = quantity * product.price;
 
@@ -218,7 +233,7 @@ exports.addOrderItem = async (req, res) => {
         where: { order_id: Number(order_id) },
         data: { order_price: order.order_price + OIprice },
       });
-      if (!newOrder) throw new Error("Failed to update order");
+      if (!newOrder) throw new MyError("Failed to update order", 500);
 
       const newPayment = await transaction.payment.update({
         where: { order_id: newOrder.order_id },
@@ -228,10 +243,10 @@ exports.addOrderItem = async (req, res) => {
         },
       });
 
-      if (!newPayment) throw new Error("Failed to update payment");
+      if (!newPayment) throw new MyError("Failed to update payment", 500);
     });
-    res.json({ "Added order_item and updated order": orderItem, newOrder });
+    res.json({ "Added order item and updated order": orderItem, newOrder });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 505).json({ error: error.message });
   }
 };
