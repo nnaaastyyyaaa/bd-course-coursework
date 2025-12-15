@@ -8,6 +8,6 @@
     "supertest": "^7.1.4"
   },
   "scripts": {
-    "test": "NODE_ENV=test jest --runInBand"
+    "test": "NODE_ENV=test jest --verbose --runInBand"
   }
 }
