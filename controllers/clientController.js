@@ -6,7 +6,7 @@ exports.getAllClients = async (req, res) => {
     if (!users) throw new MyError("Users not found", 404);
     res.json(users);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -21,7 +21,7 @@ exports.createClient = async (req, res) => {
     if (!user) throw new MyError("Failed to create client", 500);
     res.status(201).json({ "Created client": user });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ exports.getClient = async (req, res) => {
     if (!client) throw new MyError("Client not found", 404);
     res.json(client);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -48,7 +48,7 @@ exports.updateClient = async (req, res) => {
     if (!updatedClient) throw new MyError("Failed to update client", 500);
     res.json({ "Updateed client": updatedClient });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -60,6 +60,6 @@ exports.deleteClient = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

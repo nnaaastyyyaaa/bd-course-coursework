@@ -142,7 +142,7 @@ exports.createOrder = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -152,7 +152,7 @@ exports.getAllOrders = async (req, res) => {
     if (!orders) throw new MyError("Orders not found", 404);
     res.json(orders);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -165,7 +165,7 @@ exports.getOrder = async (req, res) => {
     if (!order) throw new MyError("Order not found", 404);
     res.json(order);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -180,7 +180,7 @@ exports.updateOrderStatus = async (req, res) => {
     if (!updatedOrder) throw new MyError("Failed to update order", 500);
     res.json({ "Updated order": updatedOrder });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -192,7 +192,7 @@ exports.deleteOrder = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -247,6 +247,6 @@ exports.addOrderItem = async (req, res) => {
     });
     res.json({ "Added order item and updated order": orderItem, newOrder });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

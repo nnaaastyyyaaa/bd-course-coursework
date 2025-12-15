@@ -6,7 +6,7 @@ exports.getAllWorkers = async (req, res) => {
     if (!workers) throw new MyError("Workers not found", 404);
     res.json(workers);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -21,7 +21,7 @@ exports.createWorker = async (req, res) => {
     if (!worker) throw new MyError("Failed to create worker", 500);
     res.status(201).json({ "Created worker": worker });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ exports.getWorker = async (req, res) => {
     if (!worker) throw new MyError("Worker not found", 404);
     res.json(worker);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -48,7 +48,7 @@ exports.updateWorker = async (req, res) => {
     if (!updatedWorker) throw new MyError("Failed to update worker", 500);
     res.json({ "Updateed worker": updatedWorker });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -60,6 +60,6 @@ exports.deleteWorker = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

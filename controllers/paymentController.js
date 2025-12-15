@@ -6,7 +6,7 @@ exports.getAllPayments = async (req, res) => {
     if (!payments) throw new MyError("Payments not found", 404);
     res.json(payments);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -19,7 +19,7 @@ exports.getPayment = async (req, res) => {
     if (!payment) throw new MyError("Payment not found", 404);
     res.json(payment);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -35,7 +35,7 @@ exports.updatePayment = async (req, res) => {
     if (!updatedPayment) throw new MyError("Failed to update payment", 500);
     res.json({ "Updateed payment": updatedPayment });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -47,6 +47,6 @@ exports.deletePayment = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

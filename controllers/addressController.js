@@ -6,7 +6,7 @@ exports.getAllAddresses = async (req, res) => {
     if (!addresses) throw new MyError("Addresses not found", 404);
     res.json(addresses);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -19,7 +19,7 @@ exports.getAddress = async (req, res) => {
     if (!address) throw new MyError("Address not found", 404);
     res.json(address);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -33,7 +33,7 @@ exports.updateAddress = async (req, res) => {
     if (!updatedAddress) throw new MyError("Failed to update address", 500);
     res.json({ "Updateed address": updatedAddress });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -45,6 +45,6 @@ exports.deleteAddress = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

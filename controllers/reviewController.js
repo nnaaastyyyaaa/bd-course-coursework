@@ -6,7 +6,7 @@ exports.getAllReviews = async (req, res) => {
     if (!reviews) throw new MyError("Reviews not found", 404);
     res.json(reviews);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -26,7 +26,7 @@ exports.createReview = async (req, res) => {
     if (!review) throw new MyError("Failed to create review", 500);
     res.status(201).json({ "Created review": review });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -39,7 +39,7 @@ exports.getReview = async (req, res) => {
     if (!review) throw new MyError("Review not found", 404);
     res.json(review);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -53,7 +53,7 @@ exports.updateReview = async (req, res) => {
     if (!updatedReview) throw new MyError("Failed to update review", 500);
     res.json({ "Updateed review": updatedReview });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -65,6 +65,6 @@ exports.deleteReview = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

@@ -6,7 +6,7 @@ exports.getAllShipments = async (req, res) => {
     if (!shipments) throw new MyError("Shipments not found", 404);
     res.json(shipments);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -19,7 +19,7 @@ exports.getShipment = async (req, res) => {
     if (!shipment) throw new MyError("Shipment not found", 404);
     res.json(shipment);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -35,7 +35,7 @@ exports.updateShipment = async (req, res) => {
     if (!updatedShipment) throw new MyError("Failed to update shipment", 500);
     res.json({ "Updateed shipment": updatedShipment });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -47,6 +47,6 @@ exports.deleteShipment = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

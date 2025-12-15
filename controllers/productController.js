@@ -6,7 +6,7 @@ exports.getAllProducts = async (req, res) => {
     if (!products) throw new MyError("Products not found", 404);
     res.json(products);
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -44,7 +44,7 @@ exports.createProduct = async (req, res) => {
     if (!product) throw new MyError("Failed to create product", 500);
     res.status(201).json({ "Created product": product });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -57,7 +57,7 @@ exports.getProduct = async (req, res) => {
     if (!product) throw new MyError("Product not found", 404);
     res.json(product);
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -71,7 +71,7 @@ exports.updateProduct = async (req, res) => {
     if (!updatedProduct) throw new MyError("Failed to update product", 500);
     res.json({ "Updateed product": updatedProduct });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -83,6 +83,6 @@ exports.deleteProduct = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

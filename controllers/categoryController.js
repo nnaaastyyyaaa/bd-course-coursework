@@ -6,7 +6,7 @@ exports.getAllCategories = async (req, res) => {
     if (!categories) throw new MyError("Categories not found", 404);
     res.json(categories);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -21,7 +21,7 @@ exports.createCategory = async (req, res) => {
     if (!category) throw new MyError("Failed to create category", 500);
     res.status(201).json({ "Created category": category });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ exports.getCategory = async (req, res) => {
     if (!category) throw new MyError("Category not found", 404);
     res.json(category);
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -48,7 +48,7 @@ exports.updateCategory = async (req, res) => {
     if (!updatedCategory) throw new MyError("Failed to update category", 500);
     res.json({ "Updateed category": updatedCategory });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
 
@@ -60,6 +60,6 @@ exports.deleteCategory = async (req, res) => {
     });
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
-    res.status(error.status || 505).json({ error: error.message });
+    res.status(error.statuscode || 505).json({ error: error.message });
   }
 };
