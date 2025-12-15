@@ -1,7 +1,13 @@
 {
   "dependencies": {
     "@prisma/client": "^6.15.0",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "prisma": "^6.15.0"
+    "jest": "^30.2.0",
+    "prisma": "^6.15.0",
+    "supertest": "^7.1.4"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test jest --runInBand"
   }
 }

@@ -142,6 +142,7 @@ exports.createOrder = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("CREATE ORDER ERROR:", error);
     res.status(error.statuscode || 505).json({ error: error.message });
   }
 };

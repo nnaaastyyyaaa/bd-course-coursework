@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 async function main() {
@@ -274,4 +273,4 @@ async function main() {
   console.log("Table filled");
 }
 
-main();
+module.exports = { seed: main };
