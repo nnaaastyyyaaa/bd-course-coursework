@@ -49,12 +49,12 @@ CREATE TYPE stock_status_name AS ENUM ('in stock', 'out of stock', 'coming soon'
 
 CREATE TABLE IF NOT EXISTS product (
 product_id serial PRIMARY KEY,
-product_name TEXT NOT NULL,
+product_name varchar(32) NOT NULL,
 price integer NOT NULL CHECK (price >= 0),
 quantity integer NOT NULL CHECK (quantity > 0),
 description varchar(255) NOT NULL,
 stock_status stock_status_name NOT NULL,
-image_url TEXT ,
+image_url varchar(160) ,
 category_id integer NOT NULL REFERENCES category(category_id)
 );
 
@@ -78,13 +78,22 @@ CREATE TABLE IF NOT EXISTS payment (
     order_id integer NOT NULL REFERENCES orders(order_id)
 );
 
+CREATE TYPE shipment_status_name AS ENUM ('processing', 'shipped', 'delivered', 'cancelled');
+
 CREATE TABLE IF NOT EXISTS shipment (
     shipment_id serial PRIMARY KEY,
-    carrier TEXT,
-    tracking_number TEXT UNIQUE,
-    shipment_status VARCHAR(50) NOT NULL DEFAULT 'processing' CHECK (shipment_status IN ('processing', 'shipped', 'delivered', 'cancelled')),
+    carrier varchar(32),
+    tracking_number varchar(32) UNIQUE,
+    shipment_status shipment_status_name NOT NULL DEFAULT 'processing',
     shipping_date DATE,
-    delivery_address TEXT NOT NULL,
     order_id integer NOT NULL REFERENCES orders(order_id),
     worker_id integer REFERENCES worker(worker_id)
+);
+
+CREATE TABLE IF NOT EXISTS review (
+    review_id serial PRIMARY KEY,
+    rating integer NOT NULL CHECK (rating >= 1 AND rating <=5),
+    comment varchar(255),
+    product_id integer NOT NULL REFERENCES product(product_id),
+    client_id integer REFERENCES client(client_id)
 );
