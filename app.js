@@ -10,6 +10,7 @@ const shipmentRoutes = require("./routes/shipmentRoutes");
 const workerRoutes = require("./routes/workerRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 if (process.env.NODE_ENV === "test") {
   require("dotenv").config({ path: ".env.test" });
@@ -36,5 +37,6 @@ app.use("/api/shipments", shipmentRoutes);
 app.use("/api/workers", workerRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 module.exports = app;
