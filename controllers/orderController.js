@@ -11,7 +11,10 @@ exports.createOrder = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await orderService.getAllOrders();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const orders = await orderService.getAllOrders(page, limit);
     res.json(orders);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });

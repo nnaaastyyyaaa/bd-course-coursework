@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllReviews = async () => {
-  const reviews = await repository.getAll("review");
+exports.getAllReviews = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [reviews, total] = await Promise.all([
+    repository.getAll("review", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("review"),
+  ]);
   if (!reviews) throw new MyError("Reviews not found", 404);
-  return reviews;
+  return {
+    data: reviews,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.createReview = async (body) => {

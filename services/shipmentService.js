@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllShipments = async () => {
-  const shipments = await repository.getAll("shipment");
+exports.getAllShipments = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [shipments, total] = await Promise.all([
+    repository.getAll("shipment", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("shipment"),
+  ]);
   if (!shipments) throw new MyError("Shipments not found", 404);
-  return shipments;
+  return {
+    data: shipments,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.getShipment = async (id) => {

@@ -74,6 +74,10 @@ exports.createOrder = async (req, body) => {
     const productIds = items.map((i) => i.product_id);
     const products = await repository.getAll(
       "product",
+      {
+        skip: 0,
+        take: null,
+      },
       { where: { product_id: { in: productIds } } },
       transaction
     );
@@ -159,12 +163,31 @@ exports.createOrder = async (req, body) => {
   };
 };
 
-exports.getAllOrders = async () => {
-  const orders = await repository.getAll("orders");
-  if (!orders) throw new MyError("Orders not found", 404);
-  return orders;
-};
+exports.getAllOrders = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
 
+  const [orders, total] = await Promise.all([
+    repository.getAll("orders", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("orders"),
+  ]);
+
+  if (!orders || orders.length === 0) {
+    throw new MyError("Orders not found", 404);
+  }
+
+  return {
+    data: orders,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
 exports.getOrder = async (id) => {
   const order = await repository.getOne("orders", { order_id: Number(id) });
   if (!order) throw new MyError("Order not found", 404);

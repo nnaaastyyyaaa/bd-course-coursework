@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllCategories = async () => {
-  const categories = await repository.getAll("category");
+exports.getAllCategories = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [categories, total] = await Promise.all([
+    repository.getAll("category", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("category"),
+  ]);
   if (!categories) throw new MyError("Categories not found", 404);
-  return categories;
+  return {
+    data: categories,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.createCategory = async (body) => {

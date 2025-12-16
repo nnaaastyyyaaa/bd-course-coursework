@@ -2,7 +2,9 @@ const workerService = require("../services/workerService");
 
 exports.getAllWorkers = async (req, res) => {
   try {
-    const workers = await workerService.getAllWorkers();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const workers = await workerService.getAllWorkers(page, limit);
     res.json(workers);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });

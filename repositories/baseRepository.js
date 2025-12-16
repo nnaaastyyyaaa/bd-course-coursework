@@ -5,9 +5,11 @@ exports.create = async (model, data, tx) =>
     data,
   });
 
-exports.getAll = async (model, data, tx) =>
+exports.getAll = async (model, options, data, tx) =>
   await (tx || prisma)[model].findMany({
     where: data?.where,
+    skip: options.skip,
+    take: options.take,
   });
 exports.getOne = async (model, data, tx) =>
   await (tx || prisma)[model].findUnique({
@@ -30,3 +32,7 @@ exports.delete = async (model, data, tx) =>
   (tx || prisma)[model].delete({
     where: data,
   });
+
+exports.count = (model, where = {}) => {
+  return prisma[model].count({ where });
+};

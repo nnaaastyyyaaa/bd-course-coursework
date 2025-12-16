@@ -2,7 +2,9 @@ const clientService = require("../services/clientService");
 
 exports.getAllClients = async (req, res) => {
   try {
-    const clients = await clientService.getAllClients();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const clients = await clientService.getAllClients(page, limit);
     res.json(clients);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });

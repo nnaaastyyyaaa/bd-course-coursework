@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllPayments = async () => {
-  const payments = await repository.getAll("payment");
+exports.getAllPayments = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [payments, total] = await Promise.all([
+    repository.getAll("payment", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("payment"),
+  ]);
   if (!payments) throw new MyError("Payments not found", 404);
-  return payments;
+  return {
+    data: payments,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.getPayment = async (id) => {

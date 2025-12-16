@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllClients = async () => {
-  const clients = await repository.getAll("client");
+exports.getAllClients = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [clients, total] = await Promise.all([
+    repository.getAll("client", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("client"),
+  ]);
   if (!clients) throw new MyError("Clients not found", 404);
-  return clients;
+  return {
+    data: clients,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.createClient = async (body) => {

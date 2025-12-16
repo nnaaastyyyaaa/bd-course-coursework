@@ -2,7 +2,9 @@ const paymentService = require("../services/paymentService");
 
 exports.getAllPayments = async (req, res) => {
   try {
-    const payments = await paymentService.getAllPayments();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const payments = await paymentService.getAllPayments(page, limit);
     res.json(payments);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });

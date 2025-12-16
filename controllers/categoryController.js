@@ -2,7 +2,9 @@ const categoryService = require("../services/categoryService");
 
 exports.getAllCategories = async (req, res) => {
   try {
-    const categories = await categoryService.getAllCategories();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const categories = await categoryService.getAllCategories(page, limit);
     res.json(categories);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });

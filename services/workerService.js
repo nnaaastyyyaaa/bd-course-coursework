@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllWorkers = async () => {
-  const workers = await repository.getAll("worker");
+exports.getAllWorkers = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [workers, total] = await Promise.all([
+    repository.getAll("worker", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("worker"),
+  ]);
   if (!workers) throw new MyError("Workers not found", 404);
-  return workers;
+  return {
+    data: workers,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.createWorker = async (body) => {

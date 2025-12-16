@@ -1,10 +1,26 @@
 const MyError = require("../services/myError");
 const repository = require("../repositories/baseRepository");
 
-exports.getAllAddresses = async () => {
-  const addresses = await repository.getAll("address");
+exports.getAllAddresses = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [addresses, total] = await Promise.all([
+    repository.getAll("address", {
+      skip: skip,
+      take: limit,
+    }),
+    repository.count("address"),
+  ]);
   if (!addresses) throw new MyError("Addresses not found", 404);
-  return addresses;
+  return {
+    data: addresses,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 exports.getAddress = async (id) => {
