@@ -1,9 +1,8 @@
-const MyError = require("../services/myError");
+const addressService = require("../services/addressService");
 
 exports.getAllAddresses = async (req, res) => {
   try {
-    const addresses = await req.prisma.address.findMany();
-    if (!addresses) throw new MyError("Addresses not found", 404);
+    const addresses = await addressService.getAllAddresses();
     res.json(addresses);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
@@ -13,10 +12,7 @@ exports.getAllAddresses = async (req, res) => {
 exports.getAddress = async (req, res) => {
   try {
     const id = req.params.id;
-    const address = await req.prisma.address.findUnique({
-      where: { address_id: Number(id) },
-    });
-    if (!address) throw new MyError("Address not found", 404);
+    const address = await addressService.getAddress(id);
     res.json(address);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
@@ -26,11 +22,7 @@ exports.getAddress = async (req, res) => {
 exports.updateAddress = async (req, res) => {
   try {
     const id = req.params.id;
-    const updatedAddress = await req.prisma.address.update({
-      where: { address_id: Number(id) },
-      data: req.body,
-    });
-    if (!updatedAddress) throw new MyError("Failed to update address", 500);
+    const updatedAddress = await addressService.updateAddress(id, req.body);
     res.json({ "Updateed address": updatedAddress });
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
@@ -40,9 +32,7 @@ exports.updateAddress = async (req, res) => {
 exports.deleteAddress = async (req, res) => {
   try {
     const id = req.params.id;
-    await req.prisma.address.delete({
-      where: { address_id: Number(id) },
-    });
+    await addressService.deleteAddress(id);
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });

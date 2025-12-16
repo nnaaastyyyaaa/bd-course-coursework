@@ -1,9 +1,8 @@
-const MyError = require("../services/myError");
+const workerService = require("../services/workerService");
 
 exports.getAllWorkers = async (req, res) => {
   try {
-    const workers = await req.prisma.worker.findMany();
-    if (!workers) throw new MyError("Workers not found", 404);
+    const workers = await workerService.getAllWorkers();
     res.json(workers);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
@@ -12,13 +11,7 @@ exports.getAllWorkers = async (req, res) => {
 
 exports.createWorker = async (req, res) => {
   try {
-    const { worker_role, first_name, last_name, phone_number } = req.body;
-    if (!worker_role || !first_name || !last_name || !phone_number)
-      throw new Error("Enter all required fields!", 400);
-    const worker = await req.prisma.worker.create({
-      data: { worker_role, first_name, last_name, phone_number },
-    });
-    if (!worker) throw new MyError("Failed to create worker", 500);
+    const worker = await workerService.createWorker(req.body);
     res.status(201).json({ "Created worker": worker });
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
@@ -28,10 +21,7 @@ exports.createWorker = async (req, res) => {
 exports.getWorker = async (req, res) => {
   try {
     const id = req.params.id;
-    const worker = await req.prisma.worker.findUnique({
-      where: { worker_id: Number(id) },
-    });
-    if (!worker) throw new MyError("Worker not found", 404);
+    const worker = await workerService.getWorker(id);
     res.json(worker);
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
@@ -41,12 +31,8 @@ exports.getWorker = async (req, res) => {
 exports.updateWorker = async (req, res) => {
   try {
     const id = req.params.id;
-    const updatedWorker = await req.prisma.worker.update({
-      where: { worker_id: Number(id) },
-      data: req.body,
-    });
-    if (!updatedWorker) throw new MyError("Failed to update worker", 500);
-    res.json({ "Updateed worker": updatedWorker });
+    const updatedWorker = await workerService.updateWorker(id, req.body);
+    res.json({ "Updated worker": updatedWorker });
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
   }
@@ -55,9 +41,7 @@ exports.updateWorker = async (req, res) => {
 exports.deleteWorker = async (req, res) => {
   try {
     const id = req.params.id;
-    await req.prisma.worker.delete({
-      where: { worker_id: Number(id) },
-    });
+    await workerService.deleteWorker(id);
     res.json({ status: "Deleted successfully!" });
   } catch (error) {
     res.status(error.statuscode || 505).json({ error: error.message });
