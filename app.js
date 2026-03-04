@@ -1,5 +1,6 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
+const cors = require("cors");
 
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -19,6 +20,11 @@ if (process.env.NODE_ENV === "test") {
 }
 
 const app = express();
+app.use(
+  cors({
+    origin: "*", // allow all (simple for development)
+  }),
+);
 const prisma = new PrismaClient();
 
 app.use(express.json());

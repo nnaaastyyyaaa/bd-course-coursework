@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
-      
+
     ports:
       - "5432:5432"
     volumes:
@@ -24,7 +24,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password123
       PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
@@ -40,9 +40,9 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:password123@postgres:5432/shop
     ports:
-      - "3000:3000"
+      - "5001:5000"
     volumes:
-      - ./prisma:/app/prisma 
+      - ./prisma:/app/prisma
     networks:
       - db-network
 
